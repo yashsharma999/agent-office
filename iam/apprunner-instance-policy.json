@@ -1,0 +1,111 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "CallTheAgent",
+      "Effect": "Allow",
+      "Action": "bedrock-agentcore:InvokeAgentRuntime",
+      "Resource": [
+        "arn:aws:bedrock-agentcore:*:*:runtime/*",
+        "arn:aws:bedrock-agentcore:*:*:runtime/*/runtime-endpoint/*"
+      ]
+    },
+    {
+      "Sid": "ViewerPreferences",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:*:*:table/my-agent-prefs",
+        "arn:aws:dynamodb:us-east-1:271583835787:table/my-agent-jobs"
+      ]
+    },
+    {
+      "Sid": "ReadArtifacts",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-agent-artifacts-271583835787/artifacts/*",
+        "arn:aws:s3:::my-agent-artifacts-271583835787/library/*"
+      ]
+    },
+    {
+      "Sid": "IdentityTokenVault",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock-agentcore:GetWorkloadAccessTokenForUserId",
+        "bedrock-agentcore:GetResourceOauth2Token",
+        "bedrock-agentcore:CompleteResourceTokenAuth"
+      ],
+      "Resource": [
+        "arn:aws:bedrock-agentcore:us-east-1:271583835787:workload-identity-directory/default",
+        "arn:aws:bedrock-agentcore:us-east-1:271583835787:workload-identity-directory/default/workload-identity/*",
+        "arn:aws:bedrock-agentcore:us-east-1:271583835787:token-vault/default",
+        "arn:aws:bedrock-agentcore:us-east-1:271583835787:token-vault/default/oauth2credentialprovider/*"
+      ]
+    },
+    {
+      "Sid": "IdentityProviderSecrets",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": [
+        "arn:aws:secretsmanager:us-east-1:271583835787:secret:bedrock-agentcore-identity!default/oauth2/*"
+      ]
+    },
+    {
+      "Sid": "ChatHistory",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-agent-artifacts-271583835787/chats/*"
+      ]
+    },
+    {
+      "Sid": "ChatHistoryList",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-agent-artifacts-271583835787"
+      ]
+    },
+    {
+      "Sid": "Routines",
+      "Effect": "Allow",
+      "Action": [
+        "scheduler:CreateSchedule",
+        "scheduler:UpdateSchedule",
+        "scheduler:DeleteSchedule",
+        "scheduler:GetSchedule"
+      ],
+      "Resource": "arn:aws:scheduler:us-east-1:271583835787:schedule/default/ao-*"
+    },
+    {
+      "Sid": "HandSchedulerItsRole",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": "arn:aws:iam::271583835787:role/MyAgentSchedulerRole",
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": "scheduler.amazonaws.com"
+        }
+      }
+    }
+  ]
+}

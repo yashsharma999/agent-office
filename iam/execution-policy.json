@@ -1,0 +1,172 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PullContainerImage",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchCheckLayerAvailability"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "Logging",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:DescribeLogStreams",
+        "logs:DescribeLogGroups"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "Tracing",
+      "Effect": "Allow",
+      "Action": [
+        "xray:PutTraceSegments",
+        "xray:PutTelemetryRecords",
+        "xray:GetSamplingRules",
+        "xray:GetSamplingTargets"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "Metrics",
+      "Effect": "Allow",
+      "Action": "cloudwatch:PutMetricData",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "cloudwatch:namespace": "bedrock-agentcore"
+        }
+      }
+    },
+    {
+      "Sid": "InvokeModels",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:InvokeModel",
+        "bedrock:InvokeModelWithResponseStream"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "WorkloadIdentity",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock-agentcore:GetWorkloadAccessToken",
+        "bedrock-agentcore:GetWorkloadAccessTokenForJWT",
+        "bedrock-agentcore:GetWorkloadAccessTokenForUserId"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "CloudSandboxAndBrowser",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock-agentcore:StartCodeInterpreterSession",
+        "bedrock-agentcore:InvokeCodeInterpreter",
+        "bedrock-agentcore:StopCodeInterpreterSession",
+        "bedrock-agentcore:GetCodeInterpreterSession",
+        "bedrock-agentcore:ListCodeInterpreterSessions",
+        "bedrock-agentcore:StartBrowserSession",
+        "bedrock-agentcore:InvokeBrowser",
+        "bedrock-agentcore:StopBrowserSession",
+        "bedrock-agentcore:GetBrowserSession",
+        "bedrock-agentcore:ListBrowserSessions",
+        "bedrock-agentcore:ConnectBrowserAutomationStream"
+      ],
+      "Resource": [
+        "arn:aws:bedrock-agentcore:*:aws:code-interpreter/*",
+        "arn:aws:bedrock-agentcore:*:*:code-interpreter-custom/*",
+        "arn:aws:bedrock-agentcore:*:aws:browser/*",
+        "arn:aws:bedrock-agentcore:*:*:browser-custom/*"
+      ]
+    },
+    {
+      "Sid": "ArtifactsAndLibrary",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-agent-artifacts-271583835787/artifacts/*",
+        "arn:aws:s3:::my-agent-artifacts-271583835787/library/*"
+      ]
+    },
+    {
+      "Sid": "ListLibrary",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::my-agent-artifacts-271583835787",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "library/*",
+            "artifacts/*",
+            "chats/*"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "IdentityTokenVault",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock-agentcore:GetWorkloadAccessTokenForUserId",
+        "bedrock-agentcore:GetResourceOauth2Token",
+        "bedrock-agentcore:CompleteResourceTokenAuth"
+      ],
+      "Resource": [
+        "arn:aws:bedrock-agentcore:us-east-1:271583835787:workload-identity-directory/default",
+        "arn:aws:bedrock-agentcore:us-east-1:271583835787:workload-identity-directory/default/workload-identity/*",
+        "arn:aws:bedrock-agentcore:us-east-1:271583835787:token-vault/default",
+        "arn:aws:bedrock-agentcore:us-east-1:271583835787:token-vault/default/oauth2credentialprovider/*"
+      ]
+    },
+    {
+      "Sid": "AgentPrefsTable",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:Query"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:us-east-1:271583835787:table/my-agent-prefs",
+        "arn:aws:dynamodb:us-east-1:271583835787:table/my-agent-jobs"
+      ]
+    },
+    {
+      "Sid": "IdentityProviderSecrets",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": [
+        "arn:aws:secretsmanager:us-east-1:271583835787:secret:bedrock-agentcore-identity!default/oauth2/*"
+      ]
+    },
+    {
+      "Sid": "ChatHistory",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-agent-artifacts-271583835787/chats/*"
+      ]
+    }
+  ]
+}

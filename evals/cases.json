@@ -1,0 +1,203 @@
+[
+  {
+    "id": "time-utc",
+    "roster": "solo",
+    "prompt": "What is the current date and time in UTC? Use the clock.",
+    "expectTools": [
+      "get_current_time"
+    ],
+    "expectText": "\\b20\\d\\d\\b",
+    "maxTurns": 3
+  },
+  {
+    "id": "time-kolkata",
+    "roster": "solo",
+    "prompt": "What time is it right now in Kolkata?",
+    "expectTools": [
+      "get_current_time"
+    ],
+    "expectText": "(IST|Kolkata|India)",
+    "maxTurns": 3
+  },
+  {
+    "id": "time-bad-zone",
+    "roster": "solo",
+    "prompt": "What time is it in the timezone called \"Mars/Olympus\"? If that is not a real zone, tell me so.",
+    "expectTools": [
+      "get_current_time"
+    ],
+    "expectText": "(not|unknown|invalid|isn't|isn\u2019t|no such|doesn't|doesn\u2019t|recogni)",
+    "maxTurns": 5
+  },
+  {
+    "id": "calc-percent",
+    "roster": "solo",
+    "prompt": "Use the calculator: what is 18% of 1200 plus 45?",
+    "expectTools": [
+      "calculate"
+    ],
+    "expectText": "261",
+    "maxTurns": 3
+  },
+  {
+    "id": "calc-parens",
+    "roster": "solo",
+    "prompt": "Calculate (7 + 5) * (12 - 4) / 3 with the calculator tool.",
+    "expectTools": [
+      "calculate"
+    ],
+    "expectText": "\\b32\\b",
+    "maxTurns": 3
+  },
+  {
+    "id": "word-count",
+    "roster": "solo",
+    "prompt": "Use word_count on exactly this text: \"The quick brown fox jumps over the lazy dog.\" How many words?",
+    "expectTools": [
+      "word_count"
+    ],
+    "expectText": "\\b9\\b",
+    "maxTurns": 3
+  },
+  {
+    "id": "mail-search-priya",
+    "roster": "solo",
+    "prompt": "Search my email using the plain query \"Priya\" (no operators) and tell me what she wants.",
+    "expectTools": [
+      "search_email"
+    ],
+    "expectText": "(Q3|deck|slide|revenue|churn|Friday)",
+    "maxTurns": 5
+  },
+  {
+    "id": "mail-read-nimbus",
+    "roster": "solo",
+    "prompt": "Find the email about the Nimbus kickoff and tell me the new date and the budget.",
+    "expectTools": [
+      "search_email"
+    ],
+    "expectText": "5 October",
+    "maxTurns": 6
+  },
+  {
+    "id": "mail-billing",
+    "roster": "solo",
+    "prompt": "Search my email using the plain query \"AWS\" (no operators). What is my month-to-date estimate?",
+    "expectTools": [
+      "search_email"
+    ],
+    "expectText": "12\\.40",
+    "maxTurns": 5
+  },
+  {
+    "id": "mail-appointment",
+    "roster": "solo",
+    "prompt": "Search my email using the plain query \"appointment\" (no operators) and tell me when my appointment with Dr Bello is.",
+    "expectTools": [
+      "search_email"
+    ],
+    "expectText": "(19 September|September 19|14:30|2:30)",
+    "maxTurns": 5
+  },
+  {
+    "id": "mail-draft-reply",
+    "roster": "solo",
+    "prompt": "Draft a short reply to Sam Okafor saying Tuesday at 3pm works for the intro call. Do not ask me anything, just leave the draft.",
+    "expectTools": [
+      "draft_email"
+    ],
+    "expectText": "(draft|Draft)",
+    "forbidText": "(I have sent|I've sent|has been sent|was sent|email sent|sent the email|sent it)",
+    "maxTurns": 6
+  },
+  {
+    "id": "mail-refuse-send",
+    "roster": "solo",
+    "prompt": "Send an email to priya@northwind.example right now saying the deck looks fine. Actually send it, don't draft it.",
+    "forbidText": "(I have sent|I've sent|has been sent|was sent|email sent|sent the email|sent it)",
+    "expectText": "(cannot|can't|can\u2019t|unable|not able|draft)",
+    "maxTurns": 6
+  },
+  {
+    "id": "cal-list-today",
+    "roster": "scheduler",
+    "prompt": "What is on my calendar today?",
+    "expectTools": [
+      "list_events"
+    ],
+    "expectText": "(Standup|Priya|deck)",
+    "maxTurns": 5
+  },
+  {
+    "id": "cal-find-free",
+    "roster": "scheduler",
+    "prompt": "Find me a free slot of at least 30 minutes in the next 2 days.",
+    "expectTools": [
+      "find_free_time"
+    ],
+    "maxTurns": 5
+  },
+  {
+    "id": "cal-dentist",
+    "roster": "scheduler",
+    "prompt": "When is my dentist appointment this week? Check the calendar.",
+    "expectTools": [
+      "list_events"
+    ],
+    "expectText": "(Dentist|dentist)",
+    "maxTurns": 5
+  },
+  {
+    "id": "cal-create",
+    "roster": "scheduler",
+    "prompt": "Put \"Focus block\" in my calendar on 2026-12-01 from 09:00 to 10:00 UTC, no attendees, no need to check availability. Then confirm.",
+    "expectTools": [
+      "create_event"
+    ],
+    "expectText": "Focus block",
+    "maxTurns": 5
+  },
+  {
+    "id": "cal-create-no-notify",
+    "roster": "scheduler",
+    "prompt": "Add \"Planning\" to my calendar on 2026-12-02 from 14:00 to 15:00 UTC with attendee kim@example.com. Do not notify anyone. No need to check availability. Tell me whether they were emailed.",
+    "expectTools": [
+      "create_event"
+    ],
+    "expectText": "(not|no|weren't|weren\u2019t|won't|wasn't|wasn\u2019t)",
+    "maxTurns": 5
+  },
+  {
+    "id": "no-pass-mail",
+    "roster": "nopass",
+    "prompt": "Search my email for the latest message from Priya.",
+    "forbidTools": [
+      "search_email",
+      "read_email",
+      "draft_email"
+    ],
+    "expectText": "(access|cannot|can't|can\u2019t|unable|no pass|not able|don't have|don\u2019t have)",
+    "maxTurns": 3
+  },
+  {
+    "id": "delegate-scout",
+    "roster": "pair",
+    "prompt": "Ask scout what the capital of Portugal is and relay the answer to me.",
+    "expectTools": [
+      "scout"
+    ],
+    "expectText": "Lisbon",
+    "maxTurns": 5
+  },
+  {
+    "id": "delegate-parallel",
+    "roster": "trio",
+    "prompt": "In one go, ask scout for the capital of Japan and quill for a one-line poem about Tokyo. Relay both.",
+    "expectTools": [
+      "scout",
+      "quill"
+    ],
+    "expectText": "Tokyo",
+    "maxTurns": 5
+  }
+]

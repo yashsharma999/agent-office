@@ -1,0 +1,35 @@
+{
+  "name": "my-agent",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --env-file=.env index.js",
+    "local": "MODEL_PRESET=local node --env-file=.env index.js",
+    "dev": "MODEL_PRESET=dev node --env-file=.env index.js",
+    "demo": "MODEL_PRESET=demo node --env-file=.env index.js",
+    "smoke": "node --env-file=.env smoke-test.js",
+    "serve": "node --env-file=.env server.js",
+    "ui": "node --env-file=.env ui-server.js",
+    "ui:cloud": "AGENT_TARGET=agentcore node --env-file=.env ui-server.js",
+    "eval": "node --env-file=.env evals/run.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.109.1",
+    "@aws-crypto/sha256-js": "^5.2.0",
+    "@aws-sdk/client-bedrock-agentcore": "^3.1131.0",
+    "@aws-sdk/client-dynamodb": "^3.1131.0",
+    "@aws-sdk/client-s3": "^3.1131.0",
+    "@aws-sdk/client-scheduler": "^3.1131.0",
+    "@aws-sdk/lib-dynamodb": "^3.1131.0",
+    "@aws-sdk/s3-request-presigner": "^3.1131.0",
+    "@strands-agents/sdk": "^1.14.0",
+    "aws-jwt-verify": "^4.0.1",
+    "express": "^5.2.1",
+    "openai": "^6.49.0"
+  }
+}

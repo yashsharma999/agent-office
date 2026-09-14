@@ -1,0 +1,11 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "RunRoutines",
+      "Effect": "Allow",
+      "Action": "bedrock-agentcore:InvokeAgentRuntime",
+      "Resource": ["arn:aws:bedrock-agentcore:us-east-1:271583835787:runtime/my_agent_service-Z0DqCbFvp2", "arn:aws:bedrock-agentcore:us-east-1:271583835787:runtime/my_agent_service-Z0DqCbFvp2/*"]
+    }
+  ]
+}
