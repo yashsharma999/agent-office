@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Agent Office - architecture</title>
+<style>
+  :root { --bg:#0e0c18; --panel:#16132a; --line:#2e2a4a; --ink:#e8e4f0; --dim:#8a82b0; --cyan:#6ee7d7; --yellow:#ffc46b; --orange:#ff9900; --violet:#c9a6ff; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.4 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .canvas { position: relative; width: 2200px; height: 1420px; overflow: hidden; background: var(--bg); }
+  .title { position: absolute; left: 70px; top: 46px; }
+  .title .eyebrow { font-size: 15px; letter-spacing: 5px; color: var(--orange); }
+  .title h1 { margin: 6px 0 0; font-size: 44px; letter-spacing: 1px; }
+  .title p { margin: 6px 0 0; color: var(--dim); font-size: 19px; }
+  .legend { position: absolute; right: 70px; top: 56px; display: flex; gap: 22px; font-size: 14px; color: var(--dim); letter-spacing: 1px; }
+  .legend i { display: inline-block; width: 26px; height: 3px; vertical-align: middle; margin-right: 8px; border-radius: 2px; }
+  .box { position: absolute; background: var(--panel); border: 2px solid var(--line); border-radius: 14px; padding: 16px 20px; }
+  .box h3 { margin: 0 0 4px; font-size: 20px; letter-spacing: .5px; }
+  .box .sub { color: var(--orange); font-size: 13px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .box ul { margin: 0; padding-left: 18px; color: var(--dim); font-size: 15px; line-height: 1.45; }
+  .box ul b { color: var(--ink); font-weight: 600; }
+  .box code { color: var(--ink); font-size: 14px; }
+  .box.aws { border-color: #6a4a1a; }
+  .box.aws h3 { color: var(--orange); }
+  .box.you { border-color: #2b7a70; }
+  .box.you h3 { color: var(--cyan); }
+  .box.ext { border-color: #5f3f96; border-style: dashed; }
+  .box.ext h3 { color: var(--violet); }
+  .box.core { border-color: var(--orange); box-shadow: 0 0 0 4px rgba(255,153,0,.08), 0 30px 80px rgba(0,0,0,.5); }
+  .group { position: absolute; border: 2px dashed #3a3358; border-radius: 22px; }
+  .group span { position: absolute; left: 20px; top: -13px; background: var(--bg); padding: 0 10px; font-size: 14px; letter-spacing: 3px; color: var(--dim); text-transform: uppercase; }
+  svg { position: absolute; inset: 0; pointer-events: none; }
+  .lbl { font: 13px ui-monospace, Menlo, monospace; fill: var(--dim); letter-spacing: 1px; }
+  .lbl.c { fill: var(--cyan); } .lbl.y { fill: var(--yellow); }
+  .lblbg { fill: var(--bg); }
+  .foot { position: absolute; left: 70px; bottom: 36px; font-size: 14px; color: var(--dim); letter-spacing: 1px; }
+  .foot b { color: var(--cyan); letter-spacing: 4px; margin-right: 18px; }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="title">
+    <div class="eyebrow">Agents for Humans hackathon · AWS</div>
+    <h1>Agent Office — architecture</h1>
+    <p>A personal agent tribe on Bedrock AgentCore, with a pixel office for a face</p>
+  </div>
+  <div class="legend">
+    <span><i style="background:var(--cyan)"></i>attended turn, streamed</span>
+    <span><i style="background:var(--yellow)"></i>unattended job</span>
+    <span><i style="background:var(--dim)"></i>state, tokens, files</span>
+  </div>
+
+  <div class="group" style="left:70px; top:230px; width:370px; height:560px;"><span>people</span></div>
+  <div id="browser" class="box you" style="left:100px; top:270px; width:310px; height:200px;">
+    <h3>Browser</h3><div class="sub">pixel office UI</div>
+    <ul><li>Isometric room, four desks</li><li>The Foundry: agents, rigs, passes, wardrobe</li><li>Chat, history, JOBS and ROUTINES</li></ul>
+  </div>
+  <div id="telegram" class="box you" style="left:100px; top:530px; width:310px; height:220px;">
+    <h3>Telegram</h3><div class="sub">chat + outbox</div>
+    <ul><li>Same agents, same history (/link)</li><li>Job results and files land here</li><li>/approve, /deny, /jobs</li></ul>
+  </div>
+
+  <div class="group" style="left:520px; top:230px; width:440px; height:660px;"><span>front door</span></div>
+  <div id="apprunner" class="box aws" style="left:550px; top:270px; width:380px; height:300px;">
+    <h3>AWS App Runner</h3><div class="sub">UI server · Node / Express</div>
+    <ul><li>Serves the office, streams NDJSON to the room</li><li>Verifies the Cognito id token: the user is the token</li><li>SigV4-signs calls to the runtime</li><li>Telegram webhook, routine editor, job list</li><li>One EventBridge schedule per routine</li></ul>
+  </div>
+  <div id="cognito" class="box aws" style="left:550px; top:620px; width:380px; height:230px;">
+    <h3>Amazon Cognito</h3><div class="sub">identity</div>
+    <ul><li>Hosted sign-in, code grant with a client secret</li><li>httpOnly cookies, silent refresh</li><li>Pre-sign-in worlds can be claimed</li></ul>
+  </div>
+
+  <div class="group" style="left:1050px; top:230px; width:600px; height:660px;"><span>the agents</span></div>
+  <div id="runtime" class="box aws core" style="left:1080px; top:270px; width:540px; height:360px;">
+    <h3>Bedrock AgentCore Runtime</h3><div class="sub">Strands Agents TypeScript SDK · arm64 container</div>
+    <ul>
+      <li><b>Boss agent</b> the user talks to, up to three <b>colleagues</b> reached through handoff envelopes; independent subtasks run in parallel</li>
+      <li>The rig decides model and hardware: Haiku / Sonnet / Opus, sandbox, browser</li>
+      <li>Session manager snapshots every chat to S3: reopen it and the agent remembers</li>
+      <li>Rails: summarising conversation manager, throttle retries, turn limits, tool deadlines, per-day token metering</li>
+      <li><b style="color:var(--yellow)">Job runner</b>: detached runs, trigger pre-checks, approvals via SDK interrupts, delivery to the outbox</li>
+    </ul>
+  </div>
+  <div id="ci" class="box aws" style="left:1080px; top:690px; width:255px; height:170px;">
+    <h3>AgentCore Code Interpreter</h3><div class="sub">workspace</div>
+    <ul><li>Sandboxed Python VM per agent</li><li>PDFs, decks, sheets, charts</li></ul>
+  </div>
+  <div id="web" class="box aws" style="left:1365px; top:690px; width:255px; height:170px;">
+    <h3>AgentCore Browser</h3><div class="sub">web</div>
+    <ul><li>Real cloud browser</li><li>Frames paint onto the agent's monitor</li></ul>
+  </div>
+
+  <div id="bedrock" class="box aws" style="left:1760px; top:270px; width:370px; height:160px;">
+    <h3>Amazon Bedrock</h3><div class="sub">models</div>
+    <ul><li>Claude Haiku 4.5 · Sonnet 4.6 · Opus 4.6</li><li>Streaming; extended thinking feeds the thought clouds</li></ul>
+  </div>
+  <div id="identity" class="box aws" style="left:1760px; top:480px; width:370px; height:160px;">
+    <h3>AgentCore Identity</h3><div class="sub">OAuth token vault</div>
+    <ul><li>Workload identity per app</li><li>Google tokens per user, per scope; consent once</li></ul>
+  </div>
+  <div id="google" class="box ext" style="left:1760px; top:700px; width:370px; height:160px;">
+    <h3>Google APIs</h3><div class="sub">gmail · calendar</div>
+    <ul><li>Search, read, draft. Never send</li><li>List, free slots, create, update. Never delete</li></ul>
+  </div>
+
+  <div id="scheduler" class="box aws" style="left:1080px; top:980px; width:540px; height:230px;">
+    <h3>Amazon EventBridge Scheduler</h3><div class="sub">the clock for routines</div>
+    <ul><li>One schedule per routine: <code>rate(30 minutes)</code>, <code>cron(0 8 ? * MON-FRI *)</code></li><li>Universal target <code>bedrockagentcore:invokeAgentRuntime</code>: fires the job payload straight at the runtime, no Lambda</li><li>Mail and calendar triggers only wake the model when there is something new</li></ul>
+  </div>
+
+  <div class="group" style="left:70px; top:940px; width:890px; height:300px;"><span>state</span></div>
+  <div id="dynamo" class="box aws" style="left:100px; top:980px; width:400px; height:230px;">
+    <h3>Amazon DynamoDB</h3><div class="sub">records</div>
+    <ul><li><code>my-agent-prefs</code>: the world (agents, looks, passes), routines, connections, Telegram alias, usage counters</li><li><code>my-agent-jobs</code>: job status, approvals, results</li></ul>
+  </div>
+  <div id="s3" class="box aws" style="left:530px; top:980px; width:400px; height:230px;">
+    <h3>Amazon S3</h3><div class="sub">files</div>
+    <ul><li><code>chats/</code> SDK session snapshots per user</li><li><code>artifacts/</code> files a run produced (presigned)</li><li><code>library/</code> the user's saved files</li></ul>
+  </div>
+
+  <div class="group" style="left:1730px; top:940px; width:430px; height:300px;"><span>platform</span></div>
+  <div id="cloudwatch" class="box aws" style="left:1760px; top:980px; width:370px; height:100px;">
+    <h3>Amazon CloudWatch</h3><div class="sub">logs · metrics, both services</div>
+  </div>
+  <div id="ecr" class="box aws" style="left:1760px; top:1110px; width:370px; height:100px;">
+    <h3>Amazon ECR</h3><div class="sub">UI image (x86) · runtime image (arm64)</div>
+  </div>
+
+  <svg id="arrows" width="2200" height="1420" viewBox="0 0 2200 1420"></svg>
+  <div class="foot"><b>AGENT OFFICE</b> github.com/yashsharma999/agent-office · MIT</div>
+</div>
+
+<script>
+  // Arrows are computed from the boxes' real edges, so they never cross a box
+  // just because its text turned out taller than planned.
+  const C = { c: '#6ee7d7', y: '#ffc46b', d: '#8a82b0' };
+  const svg = document.getElementById('arrows');
+  const NS = 'http://www.w3.org/2000/svg';
+  const canvas = document.querySelector('.canvas').getBoundingClientRect();
+  const rect = (id) => { const r = document.getElementById(id).getBoundingClientRect(); return { l: r.left - canvas.left, t: r.top - canvas.top, r: r.right - canvas.left, b: r.bottom - canvas.top }; };
+  // A point on a box edge: side is l/r/t/b, f is 0..1 along that edge.
+  const P = (id, side, f = 0.5) => { const b = rect(id); return side === 'l' ? [b.l, b.t + (b.b - b.t) * f] : side === 'r' ? [b.r, b.t + (b.b - b.t) * f] : side === 't' ? [b.l + (b.r - b.l) * f, b.t] : [b.l + (b.r - b.l) * f, b.b]; };
+  ['c', 'y', 'd'].forEach((k) => {
+    const m = document.createElementNS(NS, 'marker');
+    m.setAttribute('id', 'm' + k); m.setAttribute('markerWidth', 10); m.setAttribute('markerHeight', 10); m.setAttribute('refX', 8); m.setAttribute('refY', 5); m.setAttribute('orient', 'auto');
+    const p = document.createElementNS(NS, 'path'); p.setAttribute('d', 'M0,0 L10,5 L0,10 z'); p.setAttribute('fill', C[k]); m.appendChild(p); svg.appendChild(m);
+  });
+  function arrow(points, k, { dashed = false, label, at, cls } = {}) {
+    const path = document.createElementNS(NS, 'path');
+    path.setAttribute('d', points.map((p, i) => (i ? 'L' : 'M') + p[0] + ',' + p[1]).join(' '));
+    path.setAttribute('fill', 'none'); path.setAttribute('stroke', C[k]); path.setAttribute('stroke-width', 3);
+    if (dashed) path.setAttribute('stroke-dasharray', '8 6');
+    path.setAttribute('marker-end', `url(#m${k})`);
+    svg.appendChild(path);
+    if (label) {
+      const [x, y] = at;
+      const t = document.createElementNS(NS, 'text'); t.setAttribute('x', x); t.setAttribute('y', y); t.setAttribute('class', 'lbl ' + (cls ?? (k === 'd' ? '' : k))); t.textContent = label;
+      svg.appendChild(t);
+      const w = t.getBBox();
+      const bg = document.createElementNS(NS, 'rect'); bg.setAttribute('x', w.x - 6); bg.setAttribute('y', w.y - 3); bg.setAttribute('width', w.width + 12); bg.setAttribute('height', w.height + 6); bg.setAttribute('class', 'lblbg'); bg.setAttribute('rx', 4);
+      svg.insertBefore(bg, t);
+    }
+  }
+
+  // browser -> app runner (attended)
+  arrow([P('browser', 'r', 0.35), P('apprunner', 'l', 0.23)], 'c', { label: 'chat', at: [P('browser', 'r')[0] + 50, P('browser', 'r', 0.35)[1] - 12] });
+  // telegram -> app runner (webhook): the two boxes overlap in y, so it is a straight line
+  arrow([[P('telegram', 'r')[0], 552], [P('apprunner', 'l')[0], 552]], 'c', { label: 'webhook', at: [P('telegram', 'r')[0] + 30, 540] });
+  // cognito <-> browser (hosted sign-in), dashed, corridor x=460
+  arrow([P('cognito', 'l', 0.5), [460, P('cognito', 'l', 0.5)[1]], [460, P('browser', 'r', 0.8)[1]], P('browser', 'r', 0.8)], 'd', { dashed: true, label: 'sign-in', at: [466, P('cognito', 'l', 0.5)[1] - 12] });
+  // app runner -> runtime: attended (SSE) and jobs
+  arrow([P('apprunner', 'r', 0.2), P('runtime', 'l', 0.12)], 'c', { label: 'SSE stream', at: [P('apprunner', 'r')[0] + 20, P('apprunner', 'r', 0.2)[1] - 12] });
+  arrow([P('apprunner', 'r', 0.45), P('runtime', 'l', 0.32)], 'y', { label: 'jobs', at: [P('apprunner', 'r')[0] + 50, P('apprunner', 'r', 0.45)[1] + 24] });
+  // app runner -> scheduler (create/delete schedules), corridor x=1000
+  arrow([P('apprunner', 'r', 0.8), [1000, P('apprunner', 'r', 0.8)[1]], [1000, P('scheduler', 'l', 0.25)[1]], P('scheduler', 'l', 0.25)], 'd', { dashed: true, label: 'create / delete schedules', at: [1010, 962] });
+  // scheduler -> runtime (fires the job), right of the agents group
+  arrow([P('scheduler', 't', 0.9), [P('scheduler', 't', 0.9)[0], 920], [1700, 920], [1700, P('runtime', 'r', 0.92)[1]], P('runtime', 'r', 0.92)], 'y', { label: 'fires the job payload', at: [1520, 908] });
+  // runtime -> bedrock, identity, google
+  arrow([P('runtime', 'r', 0.15), P('bedrock', 'l', 0.5)], 'c', { label: 'converse', at: [P('runtime', 'r')[0] + 20, P('runtime', 'r', 0.15)[1] - 12] });
+  arrow([P('runtime', 'r', 0.55), [1700, P('runtime', 'r', 0.55)[1]], [1700, P('identity', 'l', 0.5)[1]], P('identity', 'l', 0.5)], 'd', { label: 'token', at: [1636, P('runtime', 'r', 0.55)[1] - 12] });
+  arrow([P('identity', 'b', 0.5), P('google', 't', 0.5)], 'd');
+  arrow([P('runtime', 'r', 0.75), [1730, P('runtime', 'r', 0.75)[1]], [1730, P('google', 'l', 0.5)[1]], P('google', 'l', 0.5)], 'c', { label: 'mail · calendar', at: [1600, P('runtime', 'r', 0.75)[1] + 24] });
+  // runtime -> its hardware
+  arrow([P('runtime', 'b', 0.24), P('ci', 't', 0.5)], 'c');
+  arrow([P('runtime', 'b', 0.77), P('web', 't', 0.5)], 'c');
+  // runtime -> telegram outbox: down the corridor, along the gap between rows, up into telegram
+  arrow([P('runtime', 'l', 0.8), [1020, P('runtime', 'l', 0.8)[1]], [1020, 915], [255, 915], P('telegram', 'b', 0.5)], 'y', { label: 'outbox: results, files, approval requests', at: [560, 905] });
+  // runtime -> state: corridor x=1040, then along the bottom with a branch for each store
+  const y0 = P('runtime', 'l', 0.6)[1];
+  arrow([P('runtime', 'l', 0.6), [1040, y0], [1040, 1270], [730, 1270], P('s3', 'b', 0.5)], 'd', { label: 'chat snapshots · artifacts · library', at: [745, 1262] });
+  arrow([[730, 1270], [300, 1270], P('dynamo', 'b', 0.5)], 'd', { label: 'jobs · usage counters', at: [330, 1262] });
+  // app runner -> dynamodb (world, routines, connections), corridor x=495
+  arrow([P('apprunner', 'l', 0.95), [495, P('apprunner', 'l', 0.95)[1]], [495, P('dynamo', 't')[1]]], 'd', { label: 'world · routines', at: [505, 948] });
+</script>
+</body>
+</html>
