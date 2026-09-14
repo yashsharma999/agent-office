@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Agent Office - demo deck</title>
+<style>
+  :root { --bg:#0e0c18; --panel:#16132a; --line:#2e2a4a; --ink:#e8e4f0; --dim:#8a82b0; --cyan:#6ee7d7; --yellow:#ffc46b; --pink:#ff9db1; --green:#9ae6a0; --orange:#ff9900; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font: 22px/1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .slide { width: 1920px; height: 1080px; padding: 80px 110px; display: none; position: relative; overflow: hidden; background: var(--bg); }
+  .slide.on { display: flex; flex-direction: column; }
+  .slide::after { content: attr(data-n) " / " attr(data-total); position: absolute; right: 60px; bottom: 40px; font-size: 16px; color: var(--dim); letter-spacing: 2px; }
+  .brand { position: absolute; left: 110px; bottom: 40px; font-size: 16px; color: var(--cyan); letter-spacing: 4px; }
+  .eyebrow { font-size: 18px; letter-spacing: 5px; color: var(--orange); margin-bottom: 14px; text-transform: uppercase; }
+  h1 { font-size: 76px; line-height: 1.1; margin: 0 0 20px; letter-spacing: 1px; }
+  h2 { font-size: 52px; line-height: 1.15; margin: 0 0 26px; }
+  .lead { font-size: 28px; color: var(--dim); max-width: 1300px; }
+  .hero .lead, .hero .url { max-width: 820px; position: relative; z-index: 1; text-shadow: 0 0 18px var(--bg), 0 0 6px var(--bg); }
+  ul { margin: 0; padding-left: 0; list-style: none; font-size: 27px; }
+  li { margin: 0 0 14px; padding-left: 36px; position: relative; }
+  li::before { content: "▪"; position: absolute; left: 0; color: var(--cyan); }
+  li b { color: var(--yellow); font-weight: 600; }
+  .cols { display: flex; gap: 60px; flex: 1; align-items: center; }
+  .cols > .txt { flex: 0 0 720px; }
+  .cols > .txt.wide { flex: 0 0 860px; }
+  .cols > .shot { flex: 1; min-width: 0; display: flex; justify-content: center; align-items: center; }
+  .shot img { max-width: 100%; max-height: 800px; border: 3px solid var(--line); border-radius: 14px; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+  .hero { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .hero-shot { position: absolute; right: -200px; top: 150px; width: 1000px; opacity: .92; border: 3px solid var(--line); border-radius: 16px; box-shadow: 0 40px 100px rgba(0,0,0,.7); transform: rotate(-3deg); }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; flex: 1; align-content: center; }
+  .card { background: var(--panel); border: 2px solid var(--line); border-radius: 14px; padding: 26px 30px; }
+  .card h3 { margin: 0 0 8px; font-size: 24px; color: var(--cyan); letter-spacing: 1px; }
+  .card p { margin: 0; font-size: 21px; color: var(--dim); line-height: 1.45; }
+  .card.aws h3 { color: var(--orange); }
+  /* architecture */
+  .arch { flex: 1; display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 26px 60px; align-content: center; }
+  .box { background: var(--panel); border: 2px solid var(--line); border-radius: 14px; padding: 22px 26px; font-size: 22px; }
+  .box small { display: block; color: var(--dim); font-size: 18px; margin-top: 6px; line-height: 1.4; }
+  .box.aws { border-color: var(--orange); }
+  .box.aws b { color: var(--orange); }
+  .box.you { border-color: var(--cyan); }
+  .box.you b { color: var(--cyan); }
+  .arrow { color: var(--dim); font-size: 18px; letter-spacing: 2px; margin: 0 0 8px; }
+  .tag { display: inline-block; font-size: 16px; padding: 3px 10px; border-radius: 6px; background: #221c40; color: var(--yellow); margin-right: 6px; letter-spacing: 1px; }
+  .big { font-size: 120px; line-height: 1; color: var(--green); margin: 0; }
+  .stat { display: flex; gap: 60px; margin-top: 30px; }
+  .stat div { font-size: 22px; color: var(--dim); }
+  .stat div b { display: block; font-size: 56px; color: var(--ink); }
+  .url { font-size: 34px; color: var(--cyan); margin-top: 30px; }
+</style>
+</head>
+<body>
+
+<section class="slide" id="s1">
+  <div class="hero">
+    <div class="eyebrow">AWS AI Agent hackathon</div>
+    <h1>Agent Office</h1>
+    <p class="lead">A personal agent tribe that lives in a pixel office.<br>Strands Agents on Amazon Bedrock AgentCore, with a face you can watch work.</p>
+  </div>
+  <img class="hero-shot" src="img/room.png" alt="">
+  <div class="brand">AGENT OFFICE</div>
+</section>
+
+<section class="slide" id="s2">
+  <div class="eyebrow">The idea</div>
+  <h2>A harness for personal agents, with the fun of a game</h2>
+  <div class="cols">
+    <div class="txt wide">
+      <ul>
+        <li><b>You build the team.</b> Name an agent, write what it does, give it a computer and the account passes it needs.</li>
+        <li><b>They live in a room.</b> Each agent has a desk. They walk to the letterbox for mail, to the wall calendar for the diary, sit at the keys only when they use a computer.</li>
+        <li><b>It is a real harness underneath.</b> Identity, memory of every chat, unattended jobs, approvals, budgets, evals.</li>
+        <li><b>Built on AWS end to end.</b> Bedrock, AgentCore, Cognito, App Runner, DynamoDB, S3, EventBridge.</li>
+      </ul>
+    </div>
+    <div class="shot"><img src="img/errand.png" alt=""></div>
+  </div>
+  <div class="brand">AGENT OFFICE</div>
+</section>
+
+<section class="slide" id="s3">
+  <div class="eyebrow">Architecture</div>
+  <h2>Everything runs on AWS</h2>
+  <div class="arch">
+    <div class="box you"><b>Browser / Telegram</b><small>Pixel office UI, or a bot chat. Same agents, same history.</small></div>
+    <div class="box aws"><b>App Runner</b><small>UI server. Cognito sign-in, SigV4 proxy to the runtime, Telegram webhook, routine editor.</small></div>
+    <div class="box aws"><b>Amazon Cognito</b><small>Hosted sign-in. The user id is the Cognito subject, nothing else.</small></div>
+    <div class="box aws"><b>Bedrock AgentCore Runtime</b><small>Strands Agents TS SDK in an arm64 container. Attended turns stream SSE; jobs run detached.</small></div>
+    <div class="box aws"><b>Amazon Bedrock</b><small>Claude Haiku 4.5, Sonnet 4.6, Opus 4.6 - picked by the computer you give an agent.</small></div>
+    <div class="box aws"><b>AgentCore Identity</b><small>OAuth token vault for Gmail and Google Calendar. Scope-aware, per user.</small></div>
+    <div class="box aws"><b>AgentCore Code Interpreter + Browser</b><small>A sandboxed VM and a real browser per agent, only if its rig has them.</small></div>
+    <div class="box aws"><b>DynamoDB + S3</b><small>Worlds, routines, usage counters, jobs. Chat snapshots and files in S3.</small></div>
+    <div class="box aws"><b>EventBridge Scheduler</b><small>One schedule per routine, invoking the runtime directly. No Lambda in between.</small></div>
+  </div>
+  <div class="brand">AGENT OFFICE</div>
+</section>
+
+<section class="slide" id="s4">
+  <div class="eyebrow">The room</div>
+  <h2>Watch the work happen</h2>
+  <div class="cols">
+    <div class="txt">
+      <ul>
+        <li>Thought clouds show the model reasoning. Pictograms show which tool is running.</li>
+        <li>The monitor lights only for real computer use: a shell, a file, the browser. Its screen shows the live page.</li>
+        <li>Mail is a walk to the letterbox. The diary is a walk to the wall calendar.</li>
+        <li>Click an agent for its card: mood, tasks, tools, passes. The plumbob is a nod to the game that inspired it.</li>
+      </ul>
+    </div>
+    <div class="shot"><img src="img/selected.png" alt=""></div>
+  </div>
+  <div class="brand">AGENT OFFICE</div>
+</section>
+
+<section class="slide" id="s5">
+  <div class="eyebrow">The Foundry</div>
+  <h2>Build your tribe</h2>
+  <div class="cols">
+    <div class="txt">
+      <ul>
+        <li><b>Up to four agents.</b> Slot one is the boss you talk to; the rest are colleagues it delegates to.</li>
+        <li><b>The computer decides the brain.</b> Salvaged Terminal runs Haiku with no hardware. Office Workstation runs Sonnet with a sandbox and a browser. Overclocked Rig runs Opus.</li>
+        <li><b>Templates with skills.</b> Researcher, writer, scheduler, analyst, operator. Each carries a playbook into the prompt.</li>
+        <li><b>Access passes</b> per agent: Gmail, Calendar. No pass, no tools.</li>
+      </ul>
+    </div>
+    <div class="shot"><img src="img/foundry.png" alt=""></div>
+  </div>
+  <div class="brand">AGENT OFFICE</div>
+</section>
+
+<section class="slide" id="s6">
+  <div class="eyebrow">The Foundry</div>
+  <h2>Dress them like a game character</h2>
+  <div class="cols">
+    <div class="txt">
+      <ul>
+        <li>Paper-doll characters: skin, hair, hats, glasses, tops, bottoms, shoes, every colour.</li>
+        <li>The same look is drawn seated at the desk, walking the room, and in the portrait card.</li>
+        <li>Hair sways, eyes blink, idle agents stretch and sip. Small things that make a team feel alive.</li>
+      </ul>
+    </div>
+    <div class="shot"><img src="img/look.png" alt=""></div>
+  </div>
+  <div class="brand">AGENT OFFICE</div>
+</section>
+
+<section class="slide" id="s7">
+  <div class="eyebrow">Identity</div>
+  <h2>One person, several ways in</h2>
+  <div class="cols">
+    <div class="txt">
+      <ul>
+        <li><b>Amazon Cognito</b> hosted sign-in. The server trusts the id token only; nothing the browser sends can change who you are.</li>
+        <li>Agents, chats and memory follow you to any browser.</li>
+        <li><b>Telegram</b> becomes the same account with <span class="tag">/link</span> - one code, typed once.</li>
+        <li><b>AgentCore Identity</b> keeps the Google tokens: the agent asks for consent once, the vault holds the refresh token, calendar and mail reuse the same provider with different scopes.</li>
+      </ul>
+    </div>
+    <div class="shot"><img src="img/gate.png" alt=""></div>
+  </div>
+  <div class="brand">AGENT OFFICE</div>
+</section>
+
+<section class="slide" id="s8">
+  <div class="eyebrow">Connectors</div>
+  <h2>Gmail and Calendar, with guard rails</h2>
+  <div class="grid">
+    <div class="card"><h3>Read and search mail</h3><p>Real Gmail through the AgentCore token vault. The stub inbox works the same way with no account, so the whole flow demos offline.</p></div>
+    <div class="card"><h3>Drafts only, never send</h3><p>The agent prepares; the human sends. There is no send tool to misuse.</p></div>
+    <div class="card"><h3>Calendar read and write</h3><p>List the week, find free slots, create and update events. No delete tool - cancelling emails everyone.</p></div>
+    <div class="card"><h3>Nobody is emailed by surprise</h3><p>Invitations only go out when the user asked for them. The agent says whether anyone was told.</p></div>
+    <div class="card"><h3>Passes are per agent</h3><p>Grant Gmail to the scheduler, not to the writer. A pass to an unlinked account is dropped automatically.</p></div>
+    <div class="card"><h3>Room fixtures</h3><p>Link Gmail and a letterbox appears. Link Calendar and a wall calendar goes up. Agents walk to them.</p></div>
+  </div>
+  <div class="brand">AGENT OFFICE</div>
+</section>
+
+<section class="slide" id="s9">
+  <div class="eyebrow">Autonomy</div>
+  <h2>Agents that act when not spoken to</h2>
+  <div class="cols">
+    <div class="txt">
+      <ul>
+        <li><b>Jobs</b> run unattended. Start one from the browser, or let a routine start it. Every job is also a chat with its full transcript.</li>
+        <li><b>Routines</b> on <b>EventBridge Scheduler</b>: "weekdays at 08:00", "every 30 minutes". Each is a real schedule that invokes the AgentCore runtime directly.</li>
+        <li><b>Triggers</b> for mail and calendar poll cheaply and only wake the model when something is new.</li>
+        <li><b>Outbox</b>: results and files land on Telegram. No Telegram? They wait in the JOBS tab.</li>
+      </ul>
+    </div>
+    <div class="shot"><img src="img/routines.png" alt=""></div>
+  </div>
+  <div class="brand">AGENT OFFICE</div>
+</section>
+
+<section class="slide" id="s10">
+  <div class="eyebrow">Approvals</div>
+  <h2>Nothing changes your world without a nod</h2>
+  <div class="cols">
+    <div class="txt">
+      <ul>
+        <li>In an unattended run, booking an event or leaving a draft pauses the agent with a Strands <b>interrupt</b>.</li>
+        <li>The paused state, tool call included, is snapshotted by the SDK session manager into S3.</li>
+        <li>Telegram asks: <span class="tag">/approve job-…</span> or <span class="tag">/deny job-…</span>. The browser has the same buttons.</li>
+        <li>On approve, the very same tool call completes. On deny, the agent finishes without it and says so.</li>
+      </ul>
+    </div>
+    <div class="shot"><img src="img/jobs.png" alt=""></div>
+  </div>
+  <div class="brand">AGENT OFFICE</div>
+</section>
+
+<section class="slide" id="s11">
+  <div class="eyebrow">Reliability</div>
+  <h2>Rails on every agent</h2>
+  <div class="grid">
+    <div class="card"><h3>Long chats survive</h3><p>Summarising conversation manager with proactive compression. The tenth long turn no longer dies on context overflow.</p></div>
+    <div class="card"><h3>Throttles are patience, not errors</h3><p>Retry strategy with exponential backoff, including Bedrock's pre-stream throttle that the default misses.</p></div>
+    <div class="card"><h3>Every tool has a deadline</h3><p>A hung page or VM comes back as an error the model can route around, not a frozen tab.</p></div>
+    <div class="card"><h3>Metering and ENERGY</h3><p>SDK metrics summed per user per day into DynamoDB. A token budget stops runaway routines; the ENERGY bar in the room is the real number.</p></div>
+    <div class="card"><h3>Chat history by the SDK</h3><p>Session snapshots in S3. Reopen a chat and the agent genuinely remembers.</p></div>
+    <div class="card"><h3>20 scripted evals</h3><p>Tools, refusals, mail, calendar, delegation, parallel fan-out. 20 of 20 passing on Haiku.</p></div>
+  </div>
+  <div class="brand">AGENT OFFICE</div>
+</section>
+
+<section class="slide" id="s12">
+  <div class="eyebrow">The tribe</div>
+  <h2>Colleagues that start with a full head</h2>
+  <div class="cols">
+    <div class="txt wide">
+      <ul>
+        <li><b>Handoff envelopes.</b> The boss fills a brief, the context it has, the deliverable and constraints. The envelope adds who the user is, the date and the house rules.</li>
+        <li><b>Parallel fan-out.</b> Independent subtasks go out in one turn; the SDK runs them concurrently and the room animates every busy colleague.</li>
+        <li><b>Roles with skills.</b> A researcher knows how to research before you type a word.</li>
+        <li><b>Four desks.</b> Boss plus three colleagues, each with its own computer and passes.</li>
+      </ul>
+    </div>
+    <div class="shot"><img src="img/team.png" alt=""></div>
+  </div>
+  <div class="brand">AGENT OFFICE</div>
+</section>
+
+<section class="slide" id="s13">
+  <div class="eyebrow">AWS services</div>
+  <h2>What carries the weight</h2>
+  <div class="grid">
+    <div class="card aws"><h3>Amazon Bedrock</h3><p>Claude Haiku 4.5, Sonnet 4.6 and Opus 4.6 via the Strands BedrockModel, streaming, with extended thinking for the thought clouds.</p></div>
+    <div class="card aws"><h3>AgentCore Runtime</h3><p>The agent container. Session affinity, SSE streaming, detached jobs with a busy health check.</p></div>
+    <div class="card aws"><h3>AgentCore Identity</h3><p>Workload identity and OAuth2 token vault for Google, per user, per scope.</p></div>
+    <div class="card aws"><h3>AgentCore Code Interpreter and Browser</h3><p>Sandboxed Python for documents and data; a cloud browser whose frames paint onto the agent's monitor.</p></div>
+    <div class="card aws"><h3>Cognito, App Runner, ECR</h3><p>Sign-in, the public UI service, and the images for both services.</p></div>
+    <div class="card aws"><h3>DynamoDB, S3, EventBridge Scheduler, CloudWatch</h3><p>State, snapshots and files, the clock for routines, and the logs that explained every bug.</p></div>
+  </div>
+  <div class="brand">AGENT OFFICE</div>
+</section>
+
+<section class="slide" id="s14">
+  <div class="hero">
+    <div class="eyebrow">Thank you</div>
+    <h1>Agent Office</h1>
+    <p class="lead">Open source, MIT.<br>Build a team, give them computers, watch them work.</p>
+    <div class="url">github.com/yashsharma999/agent-office</div>
+    <div class="stat">
+      <div><b>4</b>agents per room</div>
+      <div><b>20/20</b>evals passing</div>
+      <div><b>10+</b>AWS services</div>
+    </div>
+  </div>
+  <div class="brand">AGENT OFFICE</div>
+</section>
+
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  slides.forEach((s, i) => { s.dataset.n = i + 1; s.dataset.total = slides.length; });
+  function show(n) {
+    const i = Math.max(1, Math.min(slides.length, n)) - 1;
+    slides.forEach((s, k) => s.classList.toggle('on', k === i));
+    location.hash = String(i + 1);
+  }
+  show(Number(location.hash.slice(1)) || 1);
+  addEventListener('hashchange', () => show(Number(location.hash.slice(1)) || 1));
+  addEventListener('keydown', (e) => {
+    const cur = Number(location.hash.slice(1)) || 1;
+    if (e.key === 'ArrowRight' || e.key === ' ') show(cur + 1);
+    if (e.key === 'ArrowLeft') show(cur - 1);
+  });
+</script>
+</body>
+</html>
